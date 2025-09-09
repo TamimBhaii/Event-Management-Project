@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+
+<!-- Stats cards -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+  <div class="bg-white p-4 rounded shadow">
+    <div class="text-sm text-gray-500">Total Participants</div>
+    <div class="text-3xl font-bold">{{ total_participants }}</div>
+  </div>
+  <div class="bg-white p-4 rounded shadow">
+    <div class="text-sm text-gray-500">Total Events</div>
+    <div class="text-3xl font-bold">{{ total_events }}</div>
+  </div>
+  <a href="?filter=upcoming" class="bg-white p-4 rounded shadow hover:shadow-lg">
+    <div class="text-sm text-gray-500">Upcoming Events</div>
+    <div class="text-3xl font-bold">{{ upcoming_events }}</div>
+  </a>
+  <a href="?filter=past" class="bg-white p-4 rounded shadow hover:shadow-lg">
+    <div class="text-sm text-gray-500">Past Events</div>
+    <div class="text-3xl font-bold">{{ past_events }}</div>
+  </a>
+</div>
+
+<!-- Today's events -->
+<div class="mb-6">
+  <h2 class="text-xl font-semibold mb-3">Today's Events</h2>
+  <div class="space-y-3">
+    {% for event in todays_events %}
+      <div class="bg-white p-4 rounded shadow flex items-center gap-4">
+        <div class="w-32 h-20 overflow-hidden rounded">
+          {% if event.banner %}
+            <img src="{{ event.banner.url }}" class="w-full h-full object-cover">
+          {% else %}
+            <div class="w-full h-full bg-gray-100 flex items-center justify-center text-sm text-gray-400">No Image</div>
+          {% endif %}
+        </div>
+        <div class="flex-1">
+          <div class="font-semibold">{{ event.name }}</div>
+          <div class="text-sm text-gray-500">{{ event.time }} • {{ event.location }}</div>
+        </div>
+        <div class="text-sm text-gray-600">{{ event.participants.count }} participants</div>
+      </div>
+    {% empty %}
+      <div class="text-gray-500">No events today.</div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Filter buttons -->
+<div class="mb-4 space-x-2">
+  <a href="?filter=all" class="px-4 py-2 rounded border {% if filter == 'all' %}bg-indigo-600 text-white{% else %}bg-gray-100{% endif %}">All</a>
+  <a href="?filter=upcoming" class="px-4 py-2 rounded border {% if filter == 'upcoming' %}bg-indigo-600 text-white{% else %}bg-gray-100{% endif %}">Upcoming</a>
+  <a href="?filter=past" class="px-4 py-2 rounded border {% if filter == 'past' %}bg-indigo-600 text-white{% else %}bg-gray-100{% endif %}">Past</a>
+</div>
+
+<!-- Recent / Upcoming Events -->
+<h2 class="text-xl font-semibold mb-3">Events ({{ filter|capfirst }})</h2>
+<div class="grid md:grid-cols-2 gap-4">
+  {% for event in events_filtered %}
+    <div class="bg-white p-4 rounded shadow flex gap-4">
+      <div class="w-28 h-20 overflow-hidden rounded">
+        {% if event.banner %}
+          <img src="{{ event.banner.url }}" class="w-full h-full object-cover">
+        {% else %}
+          <div class="w-full h-full bg-gray-100 flex items-center justify-center text-sm text-gray-400">No Image</div>
+        {% endif %}
+      </div>
+      <div class="flex-1">
+        <div class="font-semibold text-indigo-600">{{ event.name }}</div>
+        <div class="text-sm text-gray-500">{{ event.date }} • {{ event.location }}</div>
+        <div class="text-sm text-gray-500">Category: {{ event.category.name }}</div>
+      </div>
+      <div class="text-right">
+        <div class="text-lg font-bold">{{ event.participant_count }}</div>
+        <div class="text-sm text-gray-500">participants</div>
+      </div>
+    </div>
+  {% empty %}
+    <div class="text-gray-500">No events.</div>
+  {% endfor %}
+</div>
+
+{% endblock %}

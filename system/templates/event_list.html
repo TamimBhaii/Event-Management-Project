@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Events{% endblock %}
+{% block content %}
+<div class="flex justify-between items-center mb-4">
+  <h1 class="text-2xl font-semibold">Events</h1>
+  <div class="space-x-2">
+    <a href="{% url 'system:event_create' %}" class="bg-indigo-600 text-white px-4 py-2 rounded">New Event</a>
+  </div>
+</div>
+
+<form method="get" class="mb-4 grid grid-cols-1 md:grid-cols-5 gap-2">
+  <input name="q" value="{{ q }}" placeholder="Search name or location" class="p-2 rounded border" />
+  
+  <select name="category" class="p-2 rounded border">
+    <option value="">All categories</option>
+    {% for c in categories %}
+      <option value="{{ c.id }}" {% if selected_category == c.id|stringformat:"s" %}selected{% endif %}>{{ c.name }}</option>
+    {% endfor %}
+  </select>
+
+  <input type="date" name="start_date" value="{{ start_date }}" class="p-2 rounded border" />
+  <input type="date" name="end_date" value="{{ end_date }}" class="p-2 rounded border" />
+
+  <select name="filter" class="p-2 rounded border">
+    <option value="all" {% if filter_type == 'all' %}selected{% endif %}>All Events</option>
+    <option value="upcoming" {% if filter_type == 'upcoming' %}selected{% endif %}>Upcoming</option>
+    <option value="past" {% if filter_type == 'past' %}selected{% endif %}>Past</option>
+  </select>
+
+  <div class="md:col-span-5 mt-2 flex gap-2">
+    <button class="bg-gray-800 text-white px-4 py-2 rounded">Filter</button>
+    <a href="{% url 'system:event_list' %}" class="border px-4 py-2 rounded">Reset</a>
+  </div>
+</form>
+
+<div class="space-y-4">
+  {% for event in events %}
+    <div class="bg-white p-4 rounded shadow flex items-center gap-4">
+      <div class="w-28 h-20 overflow-hidden rounded">
+        {% if event.banner %}
+          <img src="{{ event.banner.url }}" class="w-full h-full object-cover">
+        {% else %}
+          <div class="w-full h-full bg-gray-100 flex items-center justify-center text-sm text-gray-400">No Image</div>
+        {% endif %}
+      </div>
+      <div class="flex-1">
+        <a href="{% url 'system:event_detail' event.pk %}" class="text-lg font-semibold text-indigo-600">{{ event.name }}</a>
+        <div class="text-sm text-gray-500">{{ event.date }} • {{ event.location }}</div>
+        <div class="text-sm text-gray-500">Category: {{ event.category.name }}</div>
+        <div class="text-sm text-gray-400">Participants: {{ event.participant_count }}</div>
+      </div>
+    </div>
+  {% empty %}
+    <div class="text-gray-500">No events found.</div>
+  {% endfor %}
+</div>
+
+<div class="mt-4 flex items-center justify-between">
+  <div>
+    {% if events.has_previous %}
+      <a href="?page={{ events.previous_page_number }}" class="px-3 py-1 border rounded">Prev</a>
+    {% endif %}
+    <span class="mx-2">Page {{ events.number }} of {{ events.paginator.num_pages }}</span>
+    {% if events.has_next %}
+      <a href="?page={{ events.next_page_number }}" class="px-3 py-1 border rounded">Next</a>
+    {% endif %}
+  </div>
+
+  {% if events_per_date %}
+    <div class="text-sm text-gray-500">
+      {% for ed in events_per_date %}
+        {{ ed.date }}: {{ ed.count }} event{{ ed.count|pluralize }}{% if not forloop.last %}, {% endif %}
+      {% endfor %}
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

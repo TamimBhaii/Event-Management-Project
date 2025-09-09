@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Participants{% endblock %}
+{% block content %}
+<div class="flex justify-between items-center mb-4">
+  <h1 class="text-2xl font-semibold">Participants</h1>
+  <a href="{% url 'system:participant_create' %}" class="bg-indigo-600 text-white px-4 py-2 rounded">New Participant</a>
+</div>
+
+<form method="get" class="mb-4">
+  <input name="q" value="{{ q }}" placeholder="Search participants" class="p-2 rounded border w-full md:w-96"/>
+</form>
+
+<div class="space-y-3">
+  {% for p in participants %}
+    <div class="bg-white p-3 rounded shadow flex justify-between items-center">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 rounded-full overflow-hidden">
+          {% if p.avatar %}
+            <img src="{{ p.avatar.url }}" class="w-full h-full object-cover">
+          {% else %}
+            <div class="w-full h-full bg-gray-200 flex items-center justify-center text-xs text-gray-500">No</div>
+          {% endif %}
+        </div>
+        <div>
+          <div class="font-semibold">{{ p.name }}</div>
+          <div class="text-sm text-gray-500">{{ p.email }}</div>
+        </div>
+      </div>
+      <div>
+        <a href="{% url 'system:participant_update' p.pk %}" class="text-yellow-600 mr-2">Edit</a>
+        <form method="post" action="{% url 'system:participant_delete' p.pk %}" style="display:inline">{% csrf_token %}
+          <button class="text-red-600">Delete</button>
+        </form>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+
+<div class="mt-4">
+  {% if participants.has_previous %}
+    <a href="?page={{ participants.previous_page_number }}" class="px-3 py-1 border rounded">Prev</a>
+  {% endif %}
+  <span class="mx-2">Page {{ participants.number }} of {{ participants.paginator.num_pages }}</span>
+  {% if participants.has_next %}
+    <a href="?page={{ participants.next_page_number }}" class="px-3 py-1 border rounded">Next</a>
+  {% endif %}
+</div>
+{% endblock %}
