@@ -15,7 +15,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-uq!i2kx3u5)32lcp=a3c6#7g$l^wcq@0&cn^lk782n1czgmd&x'
 DEBUG = True
 ALLOWED_HOSTS = ['*']
-CSRF_TRUSTED_ORIGINS = ['http://*.onrender.com', 'http://127.0.0.1:8000' ]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://event-management-system-project-y7iq.onrender.com",
+    "http://127.0.0.1:8000",
+    "http://localhost:8000",
+]
+
 
 # -----------------------
 # INSTALLED APPS
